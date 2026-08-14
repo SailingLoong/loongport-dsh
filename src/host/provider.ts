@@ -1,9 +1,9 @@
 import { normalizeSiteIdentifier } from '../directory/policy.js'
 import type { DirectorySite } from '../directory/types.js'
 import { credentialRef as toCredentialRef } from '@deepseek-ai/dsh-credentials'
-import type { CredentialInfo, Credentials as DshCredentials } from '@deepseek-ai/dsh-credentials'
+import type { CredentialInfo, CredentialProvider as DshCredentials } from '@deepseek-ai/dsh-credentials'
 import { settingsNamespace } from '@deepseek-ai/dsh-settings'
-import type { Settings as DshSettings } from '@deepseek-ai/dsh-settings'
+import type { SettingsProvider as DshSettings } from '@deepseek-ai/dsh-settings'
 
 export type CredentialState = CredentialInfo
 
