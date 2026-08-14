@@ -1,7 +1,7 @@
 {
   "name": "loongport",
-  "version": "0.1.0",
-  "description": "LoongPort setup CLI for DeepSeek Harness (dsh)",
+  "version": "0.2.0",
+  "description": "LoongPort DeepSeek Harness (dsh) Cordis bundle and setup CLI",
   "license": "MIT",
   "author": "SailingLoong",
   "homepage": "https://github.com/SailingLoong/loongport-dsh#readme",
@@ -18,14 +18,37 @@
     "dsh-plugin",
     "loongport",
     "openai-compatible",
+    "cordis",
     "cli"
   ],
   "type": "module",
   "bin": {
     "loongport": "dist/cli.js"
   },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-api-remotes"
+      ]
+    }
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./host": "./dist/host/index.js",
+    "./client": "./dist/client/index.js"
+  },
   "files": [
-    "dist"
+    "dist",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
@@ -37,11 +60,40 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@deepseek-ai/cordis": "4.0.1",
+    "@deepseek-ai/dsh-brand": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-credentials": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-invariants": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-settings": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-typert-protocol": "0.1.0-rc.6",
+    "@deepseek-ai/schemastery": "^3.18.1",
     "commander": "^13.1.0",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.0",
+    "zod": "4.4.3"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-api-remotes": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-locale": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-runtime": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-ui-settings": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-ui-slots": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-web-react": "0.1.0-rc.6",
+    "react": "^18.2.0"
   },
   "devDependencies": {
+    "@deepseek-ai/dsh-api-remotes": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-locale": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-runtime": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-ui-settings": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-ui-slots": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-web-react": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-credentials": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-settings": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-typert-protocol": "0.1.0-rc.6",
+    "@deepseek-ai/cordis": "4.0.1",
     "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "react": "18.3.1",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"

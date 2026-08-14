@@ -6,10 +6,10 @@ before changing the package. For publication steps, also read
 
 ## Purpose and boundary
 
-`loongport` is a Node.js CLI that adds one manually supplied OpenAI-compatible route to
-[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh`). It configures DSH's
-built-in `llm-pi-ai` provider adapter; DSH remains responsible for HTTP transport, streaming,
-tool calls, retries, and model execution.
+`loongport` is a DeepSeek Harness (DSH) Cordis bundle with a Settings → LoongPort client page,
+a verified provider host service, and a Node.js CLI for advanced custom endpoints. The host
+configures DSH's built-in `llm-pi-ai` provider adapter; DSH remains responsible for HTTP
+transport, streaming, tool calls, retries, and model execution.
 
 The package deliberately does not implement:
 
@@ -21,7 +21,29 @@ The package deliberately does not implement:
 
 Do not expand those boundaries without a separately reviewed product design.
 
+For bundle users, the signed LoongPort v2 directory is the sole authority for provider identity,
+entry URL, invitation code, API base URL, models, sponsorship disclosure, disabled state, and
+authorization capability. VeriDrop observations are display-only health data: they must never
+select a site, override directory fields, change a provider, or configure credentials. The
+client opens registration/login only as an external browser link; it never automates a third-party
+login or reads browser/session data. DSH credentials own every API key. The client/store may
+retain only `{ configured: boolean }` credential state.
+
 ## User contract
+
+The normal installation path is:
+
+```bash
+dsh plugin --profile <profile> add loongport
+```
+
+After installation, users select a site in **Settings → LoongPort**, follow its policy-backed
+registration or login link when needed, manually create an API key, select a listed model, and
+save. The current default directory site is BestAPI (`https://api.bestapi.store/v1`) with
+`deepseek-v4-flash` and `deepseek-v4-pro`; the selected default is Flash. This is a directory
+policy fact, not a hard-coded UI fallback.
+
+The CLI is an advanced custom-endpoint path:
 
 The command is:
 
@@ -116,7 +138,12 @@ boundary before adding special cases.
 - Package manager and lockfile owner: pnpm with `pnpm-lock.yaml`.
 - npm remains the registry and packaging CLI.
 - The executable is `dist/cli.js` and the installed command is `loongport`.
-- The published artifact contains exactly `LICENSE`, `README.md`, `dist/cli.js`, and
+- `cordis.patch.yml` inserts two rows: the package root (`loongport`) and the isolated host
+  service (`loongport/host`). The root exports a no-op Cordis `apply()` solely so DSH can scan
+  the package-root `dsh.client` metadata and resolve `exports["./client"]`; do not import the
+  host runtime from that root entry.
+- The published artifact contains exactly `LICENSE`, `README.md`, `cordis.patch.yml`,
+  `dist/cli.js`, `dist/client/index.js`, `dist/host/index.js`, `dist/index.js`, and
   `package.json`.
 - Source, tests, plans, and maintainer documentation are excluded by `.npmignore`.
 
@@ -134,6 +161,11 @@ installs.
 User-visible CLI changes normally require checking the package README, the main LoongPort
 README in both languages, and all three website locales. The website repository, maintainer
 coordination order, and private planning locations do not belong in this public repository.
+
+Before accepting a DSH contract change, perform the packed-bundle smoke test with the installed
+tarball and inspect `dsh --dump-config`. Confirm the bundle resolves both rows, the client root
+and host subpath remain separate, the signed directory verifies, and a VeriDrop outage cannot
+alter configuration.
 
 For discoverability, the npm keywords and GitHub topics must continue to cover
 `deepseek-harness`, `dsh`, `dsh-plugin`, `loongport`, and `openai-compatible`. Treat
