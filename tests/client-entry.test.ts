@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { apply } from '../src/client/index.js'
 import { inject as hostInject } from '../src/host/index.js'
+import { apply as applyRootEntry } from '../src/index.js'
 
 type SettingsSectionRegistration = {
   name: 'settings.section'
@@ -74,6 +75,10 @@ describe('LoongPort client and host entries', () => {
 
   it('waits for the services captured by the host Remote service', () => {
     expect(hostInject).toEqual(['credentials', 'settings'])
+  })
+
+  it('keeps the package root entry a no-op Cordis client discovery point', () => {
+    expect(applyRootEntry()).toBeUndefined()
   })
 
   it('provides refresh subscriptions for the mounted section to dispose', async () => {

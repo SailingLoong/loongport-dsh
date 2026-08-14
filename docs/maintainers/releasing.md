@@ -59,7 +59,7 @@ npm pack --dry-run --json
 ```
 
 `tests/cli-boundary.test.ts` already packs the project, installs the resulting archive, runs the
-installed executable, verifies dry-run behavior, and enforces the four-file package allowlist.
+installed executable, verifies dry-run behavior, and enforces the public package allowlist.
 Still inspect the exact release archive independently:
 
 ```bash
@@ -77,6 +77,10 @@ The archive must contain exactly:
 package/LICENSE
 package/README.md
 package/dist/cli.js
+package/dist/client/index.js
+package/dist/host/index.js
+package/dist/index.js
+package/cordis.patch.yml
 package/package.json
 ```
 
@@ -113,6 +117,19 @@ test ! -e "$dsh_audit_root/settings.yaml"
 test ! -e "$dsh_audit_root/.credentials.yaml"
 rg -n 'written: false|settings.yaml|credentials.yaml|model-id' "$audit_root/dry-run.txt"
 ```
+
+Smoke-test the packed Cordis bundle in a separate temporary DSH home. The config dump must show
+the `loongport` root row and the `loongport-host` subpath row; it must not contain an API key:
+
+```bash
+dsh_bundle_home=$(mktemp -d)
+DSH_HOME="$dsh_bundle_home" dsh plugin --profile loongport-smoke add "$archive_path"
+DSH_HOME="$dsh_bundle_home" dsh --profile loongport-smoke --dump-config
+```
+
+Verify the signed v2 directory independently and confirm that its VeriDrop observation feed has
+no authorization or provider-configuration fields. Remove only the exact `dsh_bundle_home`
+temporary directory after the check.
 
 Keep the archive path for publication comparison. Delete the temporary directory only after
 post-publish verification, using its exact path rather than a broad glob.

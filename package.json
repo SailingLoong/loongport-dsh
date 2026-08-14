@@ -1,7 +1,7 @@
 {
   "name": "loongport",
-  "version": "0.1.0",
-  "description": "LoongPort setup CLI for DeepSeek Harness (dsh)",
+  "version": "0.2.0",
+  "description": "LoongPort DeepSeek Harness (dsh) Cordis bundle and setup CLI",
   "license": "MIT",
   "author": "SailingLoong",
   "homepage": "https://github.com/SailingLoong/loongport-dsh#readme",
@@ -18,11 +18,26 @@
     "dsh-plugin",
     "loongport",
     "openai-compatible",
+    "cordis",
     "cli"
   ],
   "type": "module",
   "bin": {
     "loongport": "dist/cli.js"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-api-remotes"
+      ]
+    }
   },
   "exports": {
     ".": "./dist/index.js",
@@ -30,7 +45,10 @@
     "./client": "./dist/client/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",

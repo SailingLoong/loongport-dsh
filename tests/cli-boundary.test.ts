@@ -16,6 +16,7 @@ beforeAll(async () => {
   temporaryRoot = await mkdtemp(join(tmpdir(), 'loongport-package-'))
   const packResult = spawnSync('npm', [
     'pack',
+    '--ignore-scripts',
     '--json',
     '--silent',
     '--pack-destination',
@@ -79,7 +80,9 @@ describe('loongport CLI boundary', () => {
     expect(packageFiles).toEqual([
       'LICENSE',
       'README.md',
+      'cordis.patch.yml',
       'dist/cli.js',
+      'dist/client/index.js',
       'dist/host/index.js',
       'dist/index.js',
       'package.json',

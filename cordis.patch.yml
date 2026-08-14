@@ -1,0 +1,5 @@
+- insert:
+    - id: loongport
+      name: loongport
+    - id: loongport-host
+      name: loongport/host
