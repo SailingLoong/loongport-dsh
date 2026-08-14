@@ -64,6 +64,7 @@ Still inspect the exact release archive independently:
 
 ```bash
 audit_root=$(mktemp -d)
+artifact_commit=$(git rev-parse HEAD)
 npm pack --json --pack-destination "$audit_root" > "$audit_root/pack.json"
 archive_name=$(node -p "JSON.parse(require('fs').readFileSync('$audit_root/pack.json', 'utf8'))[0].filename")
 archive_path="$audit_root/$archive_name"
@@ -142,6 +143,9 @@ Publish the verified package:
 ```bash
 test -n "${archive_path:-}"
 test -f "$archive_path"
+test -n "${artifact_commit:-}"
+tag_commit=$(git rev-parse "$release_tag^{commit}")
+test "$artifact_commit" = "$tag_commit"
 npm publish "$archive_path" --access public
 ```
 
@@ -268,11 +272,11 @@ Cleanup happens only after the feature commit is reachable from the long-lived b
 
 ```bash
 git fetch origin --prune
-feature_branch=$(git branch --show-current)
-feature_tip=$(git rev-parse "$feature_branch")
-test -n "$feature_branch"
+feature_branch=${LOONGPORT_FEATURE_BRANCH:?set LOONGPORT_FEATURE_BRANCH to the exact merged branch}
 test "$feature_branch" != main
 test "$feature_branch" != master
+git show-ref --verify "refs/heads/$feature_branch"
+feature_tip=$(git rev-parse "refs/heads/$feature_branch")
 git merge-base --is-ancestor "$feature_tip" origin/main
 git status --short --branch
 git worktree list --porcelain
