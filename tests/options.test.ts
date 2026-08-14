@@ -31,6 +31,40 @@ describe('parseSetupOptions', () => {
     })).toThrow('at least one --model is required')
   })
 
+  it.each([
+    {
+      name: 'an empty route',
+      argv: ['--route', ''],
+      message: 'route must not be empty',
+    },
+    {
+      name: 'an empty model identifier',
+      argv: ['--model', ''],
+      message: 'model identifiers must not be empty',
+    },
+    {
+      name: 'duplicate model identifiers',
+      argv: ['--model', 'model-a', '--model', 'model-a'],
+      message: 'model identifiers must be unique',
+    },
+    {
+      name: 'an invalid credential reference',
+      argv: ['--credential-name', 'INVALID-NAME'],
+      message: 'credential name must be an environment variable name',
+    },
+  ])('rejects $name', ({ argv, message }) => {
+    const modelArgs = argv.includes('--model') ? [] : ['--model', 'model-a']
+
+    expect(() => parseSetupOptions([
+      'dsh',
+      'setup',
+      '--base-url',
+      'https://example.com/v1',
+      ...modelArgs,
+      ...argv,
+    ], { LOONGPORT_API_KEY: 'test-key' })).toThrow(message)
+  })
+
   it('normalizes the base URL and applies setup defaults', () => {
     expect(parseSetupOptions([
       'dsh',

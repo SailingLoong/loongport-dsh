@@ -1,3 +1,4 @@
+import * as nodeFileSystem from 'node:fs/promises'
 import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -6,6 +7,7 @@ import { parseDocument } from 'yaml'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { runSetup } from '../src/cli.js'
+import { applySetup } from '../src/files.js'
 import type { SetupOptions } from '../src/options.js'
 
 const homes: string[] = []
@@ -78,5 +80,74 @@ describe('DSH setup runner', () => {
       LOONGPORT_API_KEY: apiKey,
     })
     expect((await stat(join(dshHome, '.credentials.yaml'))).mode & 0o777).toBe(0o600)
+  })
+
+  it('renders both documents before changing either file', async () => {
+    const home = await createHome()
+    const dshHome = join(home, '.dsh')
+    const settingsPath = join(dshHome, 'settings.yaml')
+    const credentialsPath = join(dshHome, '.credentials.yaml')
+    const originalSettings = 'unrelated: keep\n'
+    const malformedCredentials = `EXISTING: [${apiKey}\n`
+    await mkdir(dshHome, { recursive: true })
+    await writeFile(settingsPath, originalSettings)
+    await writeFile(credentialsPath, malformedCredentials)
+
+    await expect(runSetup(setupOptions(dshHome, true))).rejects.toThrow()
+
+    await expect(readFile(settingsPath, 'utf8')).resolves.toBe(originalSettings)
+    await expect(readFile(credentialsPath, 'utf8')).resolves.toBe(malformedCredentials)
+  })
+
+  it('does not activate a provider route when credentials staging fails', async () => {
+    const home = await createHome()
+    const dshHome = join(home, '.dsh')
+    const settingsPath = join(dshHome, 'settings.yaml')
+    await mkdir(dshHome, { recursive: true })
+    await writeFile(settingsPath, 'unrelated: keep\n')
+    let stagingCalls = 0
+    const failingFileSystem = {
+      ...nodeFileSystem,
+      writeFile: async (...args: Parameters<typeof nodeFileSystem.writeFile>) => {
+        stagingCalls += 1
+        if (stagingCalls === 2) {
+          throw new Error(`injected staging failure: ${apiKey}`)
+        }
+
+        return nodeFileSystem.writeFile(...args)
+      },
+    }
+
+    await expect(applySetup(setupOptions(dshHome, true), failingFileSystem)).rejects.toThrow()
+
+    expect(parseDocument(await readFile(settingsPath, 'utf8')).toJS()).not.toHaveProperty(
+      'llm-pi-ai.providers.loongport',
+    )
+  })
+
+  it('commits credentials before settings so a second rename failure cannot activate a provider route', async () => {
+    const home = await createHome()
+    const dshHome = join(home, '.dsh')
+    const settingsPath = join(dshHome, 'settings.yaml')
+    await mkdir(dshHome, { recursive: true })
+    await writeFile(settingsPath, 'unrelated: keep\n')
+    let renameCalls = 0
+    const failingFileSystem = {
+      ...nodeFileSystem,
+      rename: async (...args: Parameters<typeof nodeFileSystem.rename>) => {
+        renameCalls += 1
+        if (renameCalls === 2) {
+          throw new Error(`injected rename failure: ${apiKey}`)
+        }
+
+        return nodeFileSystem.rename(...args)
+      },
+    }
+
+    await expect(applySetup(setupOptions(dshHome, true), failingFileSystem)).rejects.toThrow()
+
+    expect(parseDocument(await readFile(settingsPath, 'utf8')).toJS()).not.toHaveProperty(
+      'llm-pi-ai.providers.loongport',
+    )
   })
 })

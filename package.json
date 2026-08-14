@@ -30,7 +30,8 @@
   "scripts": {
     "build": "tsup",
     "lint": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "npm run build && vitest run",
+    "prepack": "npm run --silent build -- --silent"
   },
   "engines": {
     "node": ">=20"

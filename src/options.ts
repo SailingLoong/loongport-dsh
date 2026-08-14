@@ -67,6 +67,22 @@ export function parseSetupOptions(argv: string[], env: NodeJS.ProcessEnv): Setup
     throw new Error('at least one --model is required')
   }
 
+  if (parsed.route.trim().length === 0) {
+    throw new Error('route must not be empty')
+  }
+
+  if (parsed.model.some((model) => model.trim().length === 0)) {
+    throw new Error('model identifiers must not be empty')
+  }
+
+  if (new Set(parsed.model).size !== parsed.model.length) {
+    throw new Error('model identifiers must be unique')
+  }
+
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(parsed.credentialName)) {
+    throw new Error('credential name must be an environment variable name')
+  }
+
   const baseUrl = normalizeBaseUrl(parsed.baseUrl)
   const apiKey = env.LOONGPORT_API_KEY
 
