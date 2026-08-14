@@ -41,6 +41,12 @@ The initial release supports manually provisioned OpenAI-compatible endpoints.
 It does not automate third-party browser login, relay discovery, desktop-app
 bridging, or automatic tier switching.
 
+## Maintainers
+
+Agents and maintainers should read the [agent guide](docs/maintainers/agent-guide.md)
+before changing the package and follow the [release runbook](docs/maintainers/releasing.md)
+before publishing.
+
 ## License
 
 [MIT](LICENSE)
