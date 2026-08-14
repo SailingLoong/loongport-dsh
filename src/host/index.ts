@@ -11,9 +11,7 @@ import type { Credentials, CredentialState, Settings } from './provider.js'
 
 export const inject = ['credentials', 'settings']
 
-export type HostContext = Pick<Context, 'credentials' | 'settings'> & {
-  fetcher?: typeof fetch
-}
+export type HostContext = Pick<Context, 'credentials' | 'settings'>
 
 export interface LoongPortHost {
   listSites(): Promise<SiteView[]>
@@ -25,8 +23,10 @@ export interface LoongPortHost {
 
 export type SiteInput = { siteId: string }
 
-export function createLoongPortHost(ctx: HostContext): LoongPortHost {
-  const fetcher = ctx.fetcher ?? fetch
+export function createLoongPortHost(
+  ctx: HostContext,
+  fetcher: typeof fetch = globalThis.fetch,
+): LoongPortHost {
   const providers = createProviderHost(ctx)
   async function siteFor(id: string) {
     const directory = await loadVerifiedDirectory(fetcher)

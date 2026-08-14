@@ -21,6 +21,7 @@ afterAll(async () => {
 describe('LoongPort DSH bundle manifest', () => {
   it('declares a root client bundle and an isolated host entry', async () => {
     const manifest = JSON.parse(await readFile(join(projectRoot, 'package.json'), 'utf8')) as {
+      dependencies?: Record<string, string>
       dsh?: { bundle?: { patch?: string }; client?: { platform?: string; inject?: string[] } }
     }
 
@@ -33,6 +34,15 @@ describe('LoongPort DSH bundle manifest', () => {
         '@deepseek-ai/dsh-client-locale',
         '@deepseek-ai/dsh-api-remotes',
       ]),
+    })
+    expect(manifest.dependencies).toMatchObject({
+      '@deepseek-ai/cordis': '4.0.1',
+      '@deepseek-ai/dsh-brand': '0.1.0-rc.6',
+      '@deepseek-ai/dsh-credentials': '0.1.0-rc.6',
+      '@deepseek-ai/dsh-invariants': '0.1.0-rc.6',
+      '@deepseek-ai/dsh-settings': '0.1.0-rc.6',
+      '@deepseek-ai/dsh-typert-protocol': '0.1.0-rc.6',
+      '@deepseek-ai/schemastery': '^3.18.1',
     })
 
     const patch = parse(await readFile(join(projectRoot, 'cordis.patch.yml'), 'utf8')) as Array<{
