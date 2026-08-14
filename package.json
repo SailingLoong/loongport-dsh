@@ -24,6 +24,9 @@
   "bin": {
     "loongport": "dist/cli.js"
   },
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "files": [
     "dist"
   ],
@@ -39,6 +42,16 @@
   "dependencies": {
     "commander": "^13.1.0",
     "yaml": "^2.9.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "4.0.1",
+    "@deepseek-ai/dsh-credentials": "0.0.1-rc.1",
+    "@deepseek-ai/dsh-settings": "0.0.1-rc.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": { "optional": true },
+    "@deepseek-ai/dsh-credentials": { "optional": true },
+    "@deepseek-ai/dsh-settings": { "optional": true }
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
