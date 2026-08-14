@@ -15,11 +15,12 @@ const site: DirectorySite = {
 }
 
 describe('configureProvider', () => {
-  it('updates only its normalized route without storing credential values in settings', async () => {
+  it('mutates only the selected route through the llm-pi-ai settings namespace', async () => {
+    const mutations: unknown[][] = []
     const settings = {
-      value: { 'llm-pi-ai': { providers: { unrelated: { apiKeyEnv: 'OTHER_KEY' } } } },
-      read() { return this.value },
-      async replace(value: unknown) { this.value = value as typeof this.value },
+      async mutate(namespace: string, operations: unknown[]) {
+        mutations.push([namespace, operations])
+      },
     }
     const credentials = {
       async set() {},
@@ -27,22 +28,22 @@ describe('configureProvider', () => {
       async describe() { return { configured: false, writable: true } },
     }
 
-    await configureProvider(site, credentials, settings)
+    await configureProvider(site, credentials, settings as never)
 
-    expect(settings.value).toEqual({
-      'llm-pi-ai': {
-        providers: {
-          unrelated: { apiKeyEnv: 'OTHER_KEY' },
-          'loongport-bestapi': {
-            displayName: 'BestAPI',
-            api: 'openai-completions',
-            baseURL: 'https://api.bestapi.store/v1',
-            apiKeyEnv: 'LOONGPORT_BESTAPI_API_KEY',
-            models: [{ id: 'deepseek-v4-flash' }, { id: 'deepseek-v4-pro' }],
-          },
+    expect(mutations).toEqual([[
+      'llm-pi-ai',
+      [{
+        op: 'set',
+        path: ['providers', 'loongport-bestapi'],
+        value: {
+          displayName: 'BestAPI',
+          api: 'openai-completions',
+          baseURL: 'https://api.bestapi.store/v1',
+          apiKeyEnv: 'LOONGPORT_BESTAPI_API_KEY',
+          models: [{ id: 'deepseek-v4-flash' }, { id: 'deepseek-v4-pro' }],
         },
-      },
-    })
+      }],
+    ]])
   })
 
   it('exposes key operations that never return the submitted secret', async () => {
@@ -52,8 +53,8 @@ describe('configureProvider', () => {
       async unset(ref: string) { actions.push(`unset:${ref}`) },
       async describe() { return { configured: true, source: 'file', writable: true } },
     }
-    const settings = { value: {}, read() { return this.value }, async replace(value: unknown) { this.value = value as {} } }
-    const host = createProviderHost({ credentials, settings })
+    const settings = { async mutate() {} }
+    const host = createProviderHost({ credentials, settings: settings as never })
 
     await expect(host.saveCredential(site, 'test-credential-value')).resolves.toBeUndefined()
     await expect(host.clearCredential(site)).resolves.toBeUndefined()

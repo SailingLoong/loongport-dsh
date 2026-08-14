@@ -1,13 +1,14 @@
 import { loadObservationFeed } from '../directory/observations.js'
 import { mergeSiteViews } from '../directory/merge.js'
 import { loadVerifiedDirectory } from '../directory/policy.js'
+import type { Context } from '@deepseek-ai/cordis'
+import type {} from '@deepseek-ai/dsh-credentials'
+import type {} from '@deepseek-ai/dsh-settings'
 import type { SiteView } from '../directory/types.js'
 import { createProviderHost } from './provider.js'
 import type { Credentials, CredentialState, Settings } from './provider.js'
 
-export interface HostContext {
-  credentials: Credentials
-  settings: Settings
+export type HostContext = Pick<Context, 'credentials' | 'settings'> & {
   fetcher?: typeof fetch
 }
 
@@ -41,6 +42,6 @@ export function createLoongPortHost(ctx: HostContext): LoongPortHost {
 }
 
 /** Cordis-compatible host entrypoint. Compositions retain the returned RPC surface. */
-export function apply(ctx: HostContext): LoongPortHost {
+export function apply(ctx: Context): LoongPortHost {
   return createLoongPortHost(ctx)
 }

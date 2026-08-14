@@ -2,6 +2,8 @@ import { normalizeSiteIdentifier } from '../directory/policy.js'
 import type { DirectorySite } from '../directory/types.js'
 import { credentialRef as toCredentialRef } from '@deepseek-ai/dsh-credentials'
 import type { CredentialInfo, Credentials as DshCredentials } from '@deepseek-ai/dsh-credentials'
+import { settingsNamespace } from '@deepseek-ai/dsh-settings'
+import type { Settings as DshSettings } from '@deepseek-ai/dsh-settings'
 
 export type CredentialState = CredentialInfo
 
@@ -15,19 +17,7 @@ export type ProviderProfile = {
   models: Array<{ id: string }>
 }
 
-export type ProviderSettingsDocument = {
-  'llm-pi-ai'?: {
-    providers?: Record<string, unknown>
-    [key: string]: unknown
-  }
-  [key: string]: unknown
-}
-
-/** Adapter over the DSH-owned settings section used by the llm-pi-ai plugin. */
-export interface Settings {
-  read(): ProviderSettingsDocument | Promise<ProviderSettingsDocument>
-  replace(value: ProviderSettingsDocument): Promise<void>
-}
+export type Settings = Pick<DshSettings, 'mutate'>
 
 function credentialRef(site: DirectorySite): Parameters<Credentials['set']>[0] {
   return toCredentialRef(normalizeSiteIdentifier(site.id).credentialRef)
@@ -55,19 +45,11 @@ function providerProfile(site: DirectorySite & { apiBaseUrl: string }, credentia
 export async function configureProvider(site: DirectorySite, _credentials: Credentials, settings: Settings): Promise<void> {
   ensureConfigurable(site)
   const { route, credentialRef: apiKeyEnv } = normalizeSiteIdentifier(site.id)
-  const current = await settings.read()
-  const llmPiAi = current['llm-pi-ai'] ?? {}
-  const providers = llmPiAi.providers ?? {}
-  await settings.replace({
-    ...current,
-    'llm-pi-ai': {
-      ...llmPiAi,
-      providers: {
-        ...providers,
-        [route]: providerProfile(site, apiKeyEnv),
-      },
-    },
-  })
+  await settings.mutate(settingsNamespace('llm-pi-ai'), [{
+    op: 'set',
+    path: ['providers', route],
+    value: providerProfile(site, apiKeyEnv),
+  }])
 }
 
 export type ProviderHost = {

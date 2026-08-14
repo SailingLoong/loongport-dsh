@@ -80,6 +80,7 @@ describe('loongport CLI boundary', () => {
       'LICENSE',
       'README.md',
       'dist/cli.js',
+      'dist/host/index.js',
       'dist/index.js',
       'package.json',
     ])
