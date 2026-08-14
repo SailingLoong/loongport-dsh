@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { realpathSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+
 import { parseSetupOptions } from './options.js'
 import { applySetup } from './files.js'
 import type { SetupResult } from './files.js'
@@ -21,6 +24,10 @@ export async function main(argv = process.argv.slice(2), env = process.env): Pro
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+function isMainModule(moduleUrl: string, entryPath: string | undefined): boolean {
+  return entryPath !== undefined && fileURLToPath(moduleUrl) === realpathSync(entryPath)
+}
+
+if (isMainModule(import.meta.url, process.argv[1])) {
   void main()
 }
