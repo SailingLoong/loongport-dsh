@@ -2,6 +2,7 @@
   "name": "loongport",
   "version": "0.1.0",
   "description": "LoongPort setup CLI for DeepSeek Harness",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "loongport": "dist/cli.js"
