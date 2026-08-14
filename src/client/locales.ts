@@ -27,9 +27,6 @@ export const en = {
   save: 'Save and configure',
   cancel: 'Cancel',
   saveFailed: 'The API key could not be saved. Check the key and try again.',
-  onboardingTitle: 'Set up a LoongPort provider',
-  onboardingDescription: 'Choose a provider and complete manual setup in Settings.',
-  onboardingAction: 'Open LoongPort settings',
 }
 
 export const zh = {
@@ -59,9 +56,6 @@ export const zh = {
   save: '保存并配置',
   cancel: '取消',
   saveFailed: '无法保存 API 密钥。请检查密钥后重试。',
-  onboardingTitle: '配置 LoongPort 服务商',
-  onboardingDescription: '请在设置中选择服务商并完成手动配置。',
-  onboardingAction: '打开 LoongPort 设置',
 }
 
 export type LoongPortLocaleKey = keyof typeof en

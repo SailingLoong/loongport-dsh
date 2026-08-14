@@ -6,19 +6,30 @@ import type { LoongPortLocaleKey } from './locales.js'
 import { SiteCard } from './SiteCard.js'
 import type { LoongPortStore } from './store.js'
 
-export type LoongPortSectionInjected = { store: LoongPortStore }
+export type LoongPortSectionInjected = {
+  store: LoongPortStore
+  subscribeInvalidations(listener: () => void): () => void
+}
 
 export type LoongPortSectionProps = PropsRuntime<'settings.section'>
   & PropsLocale<'settings.loongport'>
   & InjectFace<LoongPortSectionInjected>
 
-export function LoongPortSection({ store, t }: LoongPortSectionProps): React.JSX.Element {
+export function LoongPortSection({ store, subscribeInvalidations, t }: LoongPortSectionProps): React.JSX.Element {
   const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot)
   const [manualSiteId, setManualSiteId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!store.hasLoaded()) void store.load()
-  }, [store])
+    let mounted = true
+    const dispose = subscribeInvalidations(() => {
+      if (mounted && store.hasLoaded()) void store.refreshCredentials()
+    })
+    return () => {
+      mounted = false
+      dispose()
+    }
+  }, [store, subscribeInvalidations])
 
   const manualSite = snapshot.sites.find((site) => site.id === manualSiteId)
   const translate = t as (key: LoongPortLocaleKey) => string

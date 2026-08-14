@@ -9,6 +9,8 @@ import type { SiteView } from '../directory/types.js'
 import { createProviderHost } from './provider.js'
 import type { Credentials, CredentialState, Settings } from './provider.js'
 
+export const inject = ['credentials', 'settings']
+
 export type HostContext = Pick<Context, 'credentials' | 'settings'> & {
   fetcher?: typeof fetch
 }

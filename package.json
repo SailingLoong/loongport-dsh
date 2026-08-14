@@ -43,7 +43,8 @@
   },
   "dependencies": {
     "commander": "^13.1.0",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.0",
+    "zod": "4.4.3"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.1",
