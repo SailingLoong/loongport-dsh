@@ -1,8 +1,25 @@
 {
   "name": "loongport",
   "version": "0.1.0",
-  "description": "LoongPort setup CLI for DeepSeek Harness",
+  "description": "LoongPort setup CLI for DeepSeek Harness (dsh)",
   "license": "MIT",
+  "author": "SailingLoong",
+  "homepage": "https://github.com/SailingLoong/loongport-dsh#readme",
+  "bugs": {
+    "url": "https://github.com/SailingLoong/loongport-dsh/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SailingLoong/loongport-dsh.git"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "loongport",
+    "openai-compatible",
+    "cli"
+  ],
   "type": "module",
   "bin": {
     "loongport": "dist/cli.js"
