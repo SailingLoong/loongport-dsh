@@ -128,13 +128,12 @@ installs.
 - Package repository: <https://github.com/SailingLoong/loongport-dsh>
 - npm package: <https://www.npmjs.com/package/loongport>
 - Main LoongPort repository: <https://github.com/SailingLoong/LoongPort>
-- Website repository: <https://github.com/SailingLoong/LoongPort-website>
 - User documentation: <https://loongport.dev/zh/dsh>, <https://loongport.dev/en/dsh>, and
   <https://loongport.dev/ja/dsh>
 
 User-visible CLI changes normally require checking the package README, the main LoongPort
-README in both languages, and all three website locales. Maintainer-specific repository order
-and private planning locations do not belong in this public repository.
+README in both languages, and all three website locales. The website repository, maintainer
+coordination order, and private planning locations do not belong in this public repository.
 
 For discoverability, the npm keywords and GitHub topics must continue to cover
 `deepseek-harness`, `dsh`, `dsh-plugin`, `loongport`, and `openai-compatible`. Treat

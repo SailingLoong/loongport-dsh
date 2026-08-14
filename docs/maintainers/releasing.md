@@ -130,17 +130,24 @@ git tag -a "$release_tag" -m "loongport $release_version"
 git push origin "$release_tag"
 ```
 
-Run the artifact verification again from this exact tagged commit if the merge commit differs
-from the reviewed feature tip. A tag identifies one immutable release commit; do not retarget it
-after publication.
+Run all of section 2 again from this exact tagged commit and use the newly created `audit_root`,
+`archive_path`, and archive checks for publication. Do not reuse the candidate archive built from
+the feature branch. A tag identifies one immutable release commit; do not retarget it after
+publication.
 
 ## 4. Authenticate and publish to npm
 
 Publish the verified package:
 
 ```bash
-npm publish --access public
+test -n "${archive_path:-}"
+test -f "$archive_path"
+npm publish "$archive_path" --access public
 ```
+
+Publishing the already inspected archive keeps the registry payload identical to the artifact
+verified in section 2. Rebuilding from the working directory at this point would create a second,
+unverified artifact.
 
 npm may print a web-authentication URL. Open that URL and authenticate with the configured
 method:
@@ -231,8 +238,8 @@ Before announcing a user-visible CLI change, verify:
 - this repository's README;
 - the Chinese and English README sections in
   [SailingLoong/LoongPort](https://github.com/SailingLoong/LoongPort);
-- the `/zh/dsh`, `/en/dsh`, and `/ja/dsh` pages from
-  [SailingLoong/LoongPort-website](https://github.com/SailingLoong/LoongPort-website);
+- the public <https://loongport.dev/zh/dsh>, <https://loongport.dev/en/dsh>, and
+  <https://loongport.dev/ja/dsh> pages;
 - the production pages and sitemap after deployment.
 
 Prepare and review documentation updates alongside the package change so public instructions do
@@ -261,8 +268,11 @@ Cleanup happens only after the feature commit is reachable from the long-lived b
 
 ```bash
 git fetch origin --prune
-feature_branch=codex/document-agent-knowledge
+feature_branch=$(git branch --show-current)
 feature_tip=$(git rev-parse "$feature_branch")
+test -n "$feature_branch"
+test "$feature_branch" != main
+test "$feature_branch" != master
 git merge-base --is-ancestor "$feature_tip" origin/main
 git status --short --branch
 git worktree list --porcelain
