@@ -14,8 +14,9 @@ dsh plugin --profile <profile> add loongport
 
 Open **Settings → LoongPort** in DSH, then:
 
-1. Select a verified provider. The default is BestAPI at
-   `https://api.bestapi.store/v1`.
+1. Select a verified provider. The default is DeepSeek's official API at
+   `https://api.deepseek.com/v1`; BestAPI (`https://api.bestapi.store/v1`) is the
+   verified relay option.
 2. If you need an account, use the provider's **Register** or **Sign in** link. It opens the
    provider's own website in your browser.
 3. Generate an API key with the provider and paste it into the dialog.

@@ -39,8 +39,9 @@ dsh plugin --profile <profile> add loongport
 
 After installation, users select a site in **Settings → LoongPort**, follow its policy-backed
 registration or login link when needed, manually create an API key, select a listed model, and
-save. The current default directory site is BestAPI (`https://api.bestapi.store/v1`) with
-`deepseek-v4-flash` and `deepseek-v4-pro`; the selected default is Flash. This is a directory
+save. The current default directory site is DeepSeek's official API (`https://api.deepseek.com/v1`)
+with `deepseek-v4-flash` and `deepseek-v4-pro` (Flash is selected by default); BestAPI
+(`https://api.bestapi.store/v1`) is the verified relay entry. This is a directory
 policy fact, not a hard-coded UI fallback.
 
 The CLI is an advanced custom-endpoint path:
